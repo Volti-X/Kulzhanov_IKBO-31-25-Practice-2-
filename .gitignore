@@ -1,0 +1,43 @@
+# Папки с результатами сборки
+/build/
+/out/
+/Debug/
+/Release/
+/x64/
+/x86/
+/cmake-build-*/
+
+# Собранные программы и промежуточные файлы
+*.exe
+*.out
+*.o
+*.obj
+*.pdb
+*.ilk
+*.pch
+*.idb
+*.tlog
+*.recipe
+*.lastbuildstate
+
+# Локальные настройки редакторов
+/.vscode/
+/.idea/
+/.vs/
+*.user
+*.suo
+
+# Временные файлы
+*.tmp
+*.log
+
+# Служебные файлы ОС
+.DS_Store
+Thumbs.db
+
+# Архивы
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
