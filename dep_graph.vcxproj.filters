@@ -22,4 +22,7 @@
   <ItemGroup>
     <None Include=".gitignore" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\test_packages.txt" />
+  </ItemGroup>
 </Project>
