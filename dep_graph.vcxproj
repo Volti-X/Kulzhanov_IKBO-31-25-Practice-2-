@@ -24,6 +24,7 @@
   <ItemGroup>
     <None Include=".gitignore" />
     <None Include="README.md" />
+    <None Include="scripts\run.bat" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="tests\test_packages.txt" />

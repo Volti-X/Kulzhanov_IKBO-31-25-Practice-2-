@@ -182,5 +182,21 @@ int main(int argc, char* argv[])
         }
     }
 
+    cout << "\n=== Reverse dependencies for " << packageName << " ===\n";
+    bool found = false;
+
+    for (const auto& pair : graph) {
+        for (const string& dep : pair.second) {
+            if (dep == packageName) {
+                cout << "  - " << pair.first << "\n";
+                found = true;
+            }
+        }
+    }
+
+    if (!found) {
+        cout << "No reverse dependencies found.\n";
+    }
+
 	return 0;
 }
