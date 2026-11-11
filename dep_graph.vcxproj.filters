@@ -21,8 +21,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="data\test_packages.txt" />
+    <Text Include="tests\test_packages.txt" />
+    <Text Include="tests\test_graph.txt" />
   </ItemGroup>
 </Project>

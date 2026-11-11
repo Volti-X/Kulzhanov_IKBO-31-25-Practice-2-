@@ -3,16 +3,11 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include <windows.h>
-#include <urlmon.h>
-#pragma comment(lib, "urlmon.lib")
+#include <queue>
+#include <set>
+#include <map>
 
 using namespace std;
-
-bool downloadFile(const string& url, const string& savePath) {
-	HRESULT hr = URLDownloadToFileA(NULL, url.c_str(), savePath.c_str(), 0, NULL);
-	return hr == S_OK;
-}
 
 string cleanPackageName(const string& dep) {
 	size_t spacePos = dep.find(' ');
@@ -112,28 +107,77 @@ int main(int argc, char* argv[])
 
     string localRepoPath = repoUrl;
 
-    if (mode == "url") {
-        localRepoPath = "data/packages.gz";
+    cout << "\n=== Building dependency graph (BFS) ===\n";
 
-        cout << "\nDownloading from URL...\n";
-        if (!downloadFile(repoUrl, localRepoPath)) {
-            cerr << "Download failed!\n";
-            return 1;
+    queue<string> q;
+    set<string> visited;
+    map<string, vector<string>> graph;
+
+    q.push(packageName);
+
+    while (!q.empty()) {
+        string current = q.front();
+        q.pop();
+
+        if (visited.count(current))
+            continue;
+        visited.insert(current);
+
+        if (!filter.empty() && current.find(filter) != string::npos) {
+            cout << "[Filtered out]: " << current << "\n";
+            continue;
         }
-        cout << "Downloaded successfully to " << localRepoPath << "\n";
+
+        vector<string> deps = parseDependencies(localRepoPath, current, "latest");
+        graph[current] = deps;
+
+        for (const string& dep : deps) {
+            if (!visited.count(dep)) {
+                q.push(dep);
+            }
+        }
     }
-    else {
-        cout << "\nUsing local file...\n";
+
+    if (!filter.empty()) {
+        for (auto& pair : graph) {
+            vector<string> cleanDeps;
+            for (const string& dep : pair.second) {
+                if (dep.find(filter) == string::npos) {
+                    cleanDeps.push_back(dep);
+                }
+            }
+            pair.second = cleanDeps;
+        }
+    }
+
+    cout << "\n=== Resulting Dependency Graph ===\n";
+    for (auto const& pair : graph) {
+        cout << pair.first << " -> ";
+        if (pair.second.empty()) {
+            cout << "(no dependencies)\n";
+        }
+        else {
+            for (size_t i = 0; i < pair.second.size(); ++i) {
+                cout << pair.second[i];
+                if (i < pair.second.size() - 1) cout << ", ";
+            }
+            cout << "\n";
+        }
     }
 
     cout << "\n=== Direct dependencies for " << packageName << " ===\n";
     vector<string> deps = parseDependencies(localRepoPath, packageName, version);
 
-    if (deps.empty()) {
+    vector<string> filteredDeps;
+    for (const string& dep : deps) {
+        if (filter.empty() || dep.find(filter) == string::npos)
+            filteredDeps.push_back(dep);
+    }
+    if (filteredDeps.empty()) {
         cout << "No dependencies found (or package/version not found).\n";
     }
     else {
-        for (const string& dep : deps) {
+        for (const string& dep : filteredDeps) {
             cout << "  - " << dep << "\n";
         }
     }
